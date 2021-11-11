@@ -38,8 +38,8 @@ export enum Events {
   BIRTH_IN_PROGRESS_DEC = '/events/birth/in-progress-declaration', // Field agent or DHIS2in progress application
   BIRTH_NEW_DEC = '/events/birth/new-declaration', // Field agent completed application
   BIRTH_UPDATE_DEC = '/events/birth/update-declaration',
-  BIRTH_WAITING_VALIDATION = '/events/birth/waiting-validation',
-  BIRTH_NEW_WAITING_VALIDATION = '/events/birth/new-waiting-validation', // Registrar new registration application
+  BIRTH_WAITING_EXTERNAL_RESOURCE_VALIDATION = '/events/birth/request-for-registrar-validation-of-birth',
+  REGISTRAR_BIRTH_REGISTRATION_AWAITING_EXTERNAL_RESOURCE_VALIDATION = '/events/birth/registrar-birth-registration-waiting-external-resource-validation', // Registrar new registration application
   BIRTH_MARK_REG = '/events/birth/mark-registered',
   BIRTH_MARK_VALID = '/events/birth/mark-validated',
   BIRTH_MARK_CERT = '/events/birth/mark-certified',
@@ -47,14 +47,14 @@ export enum Events {
   DEATH_IN_PROGRESS_DEC = '/events/death/in-progress-declaration', /// Field agent or DHIS2in progress application
   DEATH_NEW_DEC = '/events/death/new-declaration', // Field agent completed application
   DEATH_UPDATE_DEC = '/events/death/update-declaration',
-  DEATH_WAITING_VALIDATION = '/events/death/waiting-validation',
-  DEATH_NEW_WAITING_VALIDATION = '/events/death/new-waiting-validation', // Registrar new registration application
+  DEATH_WAITING_EXTERNAL_RESOURCE_VALIDATION = '/events/death/death-waiting-external-resource-validation',
+  REGISTRAR_DEATH_REGISTRATION_AWAITING_EXTERNAL_RESOURCE_VALIDATION = '/events/death/registrar-death-registration-waiting-external-resource-validation', // Registrar new registration application
   DEATH_MARK_REG = '/events/death/mark-registered',
   DEATH_MARK_VALID = '/events/death/mark-validated',
   DEATH_MARK_CERT = '/events/death/mark-certified',
   DEATH_MARK_VOID = '/events/death/mark-voided',
-  BIRTH_NEW_VALIDATE = '/events/birth/new-validation', // Registration agent new application
-  DEATH_NEW_VALIDATE = '/events/death/new-validation', // Registration agent new application
+  BIRTH_REQUEST_FOR_REGISTRAR_VALIDATION = '/events/birth/request-for-registrar-validation-of-birth', // Registration agent new application
+  DEATH_REQUEST_FOR_REGISTRAR_VALIDATION = '/events/death/request-for-registrar-validation-of-death', // Registration agent new application
   EVENT_NOT_DUPLICATE = '/events/not-duplicate',
   UNKNOWN = 'unknown'
 }
@@ -80,18 +80,18 @@ function detectEvent(request: Hapi.Request): Events {
                 return Events.BIRTH_MARK_VALID
               }
               if (hasRegisterScope(request)) {
-                return Events.BIRTH_WAITING_VALIDATION
+                return Events.BIRTH_WAITING_EXTERNAL_RESOURCE_VALIDATION
               }
             } else {
               return Events.BIRTH_MARK_CERT
             }
           } else {
             if (hasRegisterScope(request)) {
-              return Events.BIRTH_NEW_WAITING_VALIDATION
+              return Events.REGISTRAR_BIRTH_REGISTRATION_AWAITING_EXTERNAL_RESOURCE_VALIDATION
             }
 
             if (hasValidateScope(request)) {
-              return Events.BIRTH_NEW_VALIDATE
+              return Events.BIRTH_REQUEST_FOR_REGISTRAR_VALIDATION
             }
 
             return isInProgressApplication(fhirBundle)
@@ -105,18 +105,18 @@ function detectEvent(request: Hapi.Request): Events {
                 return Events.DEATH_MARK_VALID
               }
               if (hasRegisterScope(request)) {
-                return Events.DEATH_WAITING_VALIDATION
+                return Events.DEATH_WAITING_EXTERNAL_RESOURCE_VALIDATION
               }
             } else {
               return Events.DEATH_MARK_CERT
             }
           } else {
             if (hasRegisterScope(request)) {
-              return Events.DEATH_NEW_WAITING_VALIDATION
+              return Events.REGISTRAR_DEATH_REGISTRATION_AWAITING_EXTERNAL_RESOURCE_VALIDATION
             }
 
             if (hasValidateScope(request)) {
-              return Events.DEATH_NEW_VALIDATE
+              return Events.DEATH_REQUEST_FOR_REGISTRAR_VALIDATION
             }
 
             return isInProgressApplication(fhirBundle)
@@ -227,42 +227,42 @@ export async function fhirWorkflowEventHandler(
         request.headers.authorization
       )
       break
-    case Events.BIRTH_NEW_VALIDATE:
+    case Events.BIRTH_REQUEST_FOR_REGISTRAR_VALIDATION:
       response = await createRegistrationHandler(request, h, event)
       await triggerEvent(
-        Events.BIRTH_NEW_VALIDATE,
+        Events.BIRTH_REQUEST_FOR_REGISTRAR_VALIDATION,
         request.payload,
         request.headers.authorization
       )
       break
-    case Events.BIRTH_WAITING_VALIDATION:
+    case Events.BIRTH_WAITING_EXTERNAL_RESOURCE_VALIDATION:
       response = await markEventAsWaitingValidationHandler(request, h, event)
       await triggerEvent(
-        Events.BIRTH_WAITING_VALIDATION,
+        Events.BIRTH_WAITING_EXTERNAL_RESOURCE_VALIDATION,
         request.payload,
         request.headers.authorization
       )
       break
-    case Events.DEATH_WAITING_VALIDATION:
+    case Events.DEATH_WAITING_EXTERNAL_RESOURCE_VALIDATION:
       response = await markEventAsWaitingValidationHandler(request, h, event)
       await triggerEvent(
-        Events.DEATH_WAITING_VALIDATION,
+        Events.DEATH_WAITING_EXTERNAL_RESOURCE_VALIDATION,
         request.payload,
         request.headers.authorization
       )
       break
-    case Events.DEATH_NEW_VALIDATE:
+    case Events.DEATH_REQUEST_FOR_REGISTRAR_VALIDATION:
       response = await createRegistrationHandler(request, h, event)
       await triggerEvent(
-        Events.DEATH_NEW_VALIDATE,
+        Events.DEATH_REQUEST_FOR_REGISTRAR_VALIDATION,
         request.payload,
         request.headers.authorization
       )
       break
-    case Events.BIRTH_NEW_WAITING_VALIDATION:
+    case Events.REGISTRAR_BIRTH_REGISTRATION_AWAITING_EXTERNAL_RESOURCE_VALIDATION:
       response = await createRegistrationHandler(request, h, event)
       await triggerEvent(
-        Events.BIRTH_NEW_WAITING_VALIDATION,
+        Events.REGISTRAR_BIRTH_REGISTRATION_AWAITING_EXTERNAL_RESOURCE_VALIDATION,
         request.payload,
         request.headers.authorization
       )
@@ -283,10 +283,10 @@ export async function fhirWorkflowEventHandler(
         request.headers.authorization
       )
       break
-    case Events.DEATH_NEW_WAITING_VALIDATION:
+    case Events.REGISTRAR_DEATH_REGISTRATION_AWAITING_EXTERNAL_RESOURCE_VALIDATION:
       response = await createRegistrationHandler(request, h, event)
       await triggerEvent(
-        Events.DEATH_NEW_WAITING_VALIDATION,
+        Events.REGISTRAR_DEATH_REGISTRATION_AWAITING_EXTERNAL_RESOURCE_VALIDATION,
         request.payload,
         request.headers.authorization
       )

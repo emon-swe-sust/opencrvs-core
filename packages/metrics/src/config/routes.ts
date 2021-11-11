@@ -84,7 +84,7 @@ export const getRoutes = () => {
     // New validation
     {
       method: 'POST',
-      path: '/events/birth/new-validation',
+      path: '/events/birth/request-for-registrar-validation-of-birth',
       handler: newValidationHandler,
       config: {
         tags: ['api']
@@ -92,7 +92,7 @@ export const getRoutes = () => {
     },
     {
       method: 'POST',
-      path: '/events/death/new-validation',
+      path: '/events/death/request-for-registrar-validation-of-death',
       handler: newValidationHandler,
       config: {
         tags: ['api']
@@ -102,7 +102,7 @@ export const getRoutes = () => {
     // New registration
     {
       method: 'POST',
-      path: '/events/birth/waiting-validation',
+      path: '/events/birth/request-for-registrar-validation-of-birth',
       handler: waitingValidationHandler,
       config: {
         tags: ['api']
@@ -110,7 +110,7 @@ export const getRoutes = () => {
     },
     {
       method: 'POST',
-      path: '/events/death/waiting-validation',
+      path: '/events/death/death-waiting-external-resource-validation',
       handler: waitingValidationHandler,
       config: {
         tags: ['api']
@@ -118,7 +118,8 @@ export const getRoutes = () => {
     },
     {
       method: 'POST',
-      path: '/events/birth/new-waiting-validation',
+      path:
+        '/events/birth/registrar-birth-registration-waiting-external-resource-validation',
       handler: newWaitingValidationHandler,
       config: {
         tags: ['api']
@@ -126,7 +127,8 @@ export const getRoutes = () => {
     },
     {
       method: 'POST',
-      path: '/events/death/new-waiting-validation',
+      path:
+        '/events/death/registrar-death-registration-waiting-external-resource-validation',
       handler: newWaitingValidationHandler,
       config: {
         tags: ['api']

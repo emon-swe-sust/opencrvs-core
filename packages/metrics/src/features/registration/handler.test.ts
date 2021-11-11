@@ -1140,7 +1140,7 @@ describe('When an existing application is marked registered', () => {
     fetchTaskHistory.mockResolvedValue(taskHistory)
     const res = await server.server.inject({
       method: 'POST',
-      url: '/events/birth/waiting-validation',
+      url: '/events/birth/request-for-registrar-validation-of-birth',
       headers: {
         Authorization: `Bearer ${token}`
       },
